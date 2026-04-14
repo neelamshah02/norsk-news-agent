@@ -1,8 +1,6 @@
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import type { LanguageCard } from '@/types';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
 const responseSchema = {
   type: SchemaType.OBJECT,
   properties: {
@@ -38,6 +36,8 @@ const responseSchema = {
           distractors: {
             type: SchemaType.ARRAY,
             items: { type: SchemaType.STRING },
+            minItems: 3,
+            maxItems: 3,
           },
         },
         required: ['word', 'correct', 'distractors'],
@@ -48,6 +48,10 @@ const responseSchema = {
 };
 
 export async function generateLanguageCard(articleText: string): Promise<LanguageCard> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
+
+  const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
     systemInstruction: 'You are a Norwegian language teacher helping an English-speaking student at B1 level learn Norwegian through authentic news articles.',
@@ -70,5 +74,9 @@ Article text:
 ${articleText.slice(0, 6000)}`;
 
   const result = await model.generateContent(prompt);
-  return JSON.parse(result.response.text()) as LanguageCard;
+  try {
+    return JSON.parse(result.response.text()) as LanguageCard;
+  } catch {
+    throw new Error('Gemini returned non-JSON response');
+  }
 }

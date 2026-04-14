@@ -42,6 +42,10 @@ jest.mock('@google/generative-ai', () => ({
 
 import { generateLanguageCard } from '@/lib/gemini';
 
+beforeEach(() => {
+  process.env.GEMINI_API_KEY = 'test-key';
+});
+
 describe('generateLanguageCard', () => {
   it('returns a parsed LanguageCard from Gemini JSON response', async () => {
     const result = await generateLanguageCard('Noen norsk artikkeltekst her som er lang nok til å bli prosessert.');
@@ -51,5 +55,27 @@ describe('generateLanguageCard', () => {
     expect(result.grammarNote.sentence).toContain('ble signert');
     expect(result.quizQuestions).toHaveLength(5);
     expect(result.quizQuestions[0].distractors).toHaveLength(3);
+  });
+
+  it('throws when Gemini returns non-JSON response', async () => {
+    const { GoogleGenerativeAI } = jest.requireMock('@google/generative-ai');
+    GoogleGenerativeAI.mockImplementationOnce(() => ({
+      getGenerativeModel: jest.fn().mockReturnValue({
+        generateContent: jest.fn().mockResolvedValue({
+          response: { text: () => 'not valid json' },
+        }),
+      }),
+    }));
+    await expect(generateLanguageCard('tekst')).rejects.toThrow('Gemini returned non-JSON response');
+  });
+
+  it('throws when Gemini API call fails', async () => {
+    const { GoogleGenerativeAI } = jest.requireMock('@google/generative-ai');
+    GoogleGenerativeAI.mockImplementationOnce(() => ({
+      getGenerativeModel: jest.fn().mockReturnValue({
+        generateContent: jest.fn().mockRejectedValue(new Error('API error')),
+      }),
+    }));
+    await expect(generateLanguageCard('tekst')).rejects.toThrow('API error');
   });
 });
