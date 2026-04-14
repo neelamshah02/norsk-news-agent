@@ -19,7 +19,7 @@ export function extractText(html: string): string {
       if (text.length > 40) paragraphs.push(text);
     });
     const joined = paragraphs.join('\n\n');
-    if (joined.length > 0) return joined;
+    if (joined.length > 200) return joined;
   }
   return '';
 }
