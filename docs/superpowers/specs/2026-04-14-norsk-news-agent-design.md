@@ -61,9 +61,9 @@ Overlays the card. One question at a time (Option A from design review):
 
 ---
 
-## API Route: `POST /api/analyze`
+## API Route: `GET /api/analyze?topic=<keyword>`
 
-**Input:** `{ topic: string }`
+**Input:** `topic` query parameter (string)
 
 **Pipeline:**
 1. Fetch RSS feeds from NRK, VG, and Aftenposten in parallel (`node-fetch`)
