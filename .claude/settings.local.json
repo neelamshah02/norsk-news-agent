@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git check-ignore:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git worktree:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout 15 npm run dev)",
+      "Bash(git -C /Users/NES/Documents/GitHub/norsk-news-agent/.worktrees/build show 17b7477 --stat)",
+      "Bash(git -C /Users/NES/Documents/GitHub/norsk-news-agent/.worktrees/build show 5b81107 --stat)",
+      "Bash(git -C /Users/NES/Documents/GitHub/norsk-news-agent/.worktrees/build show 5b81107:jest.config.ts)",
+      "Bash(node -e \"const pkg = require\\('/Users/NES/Documents/GitHub/norsk-news-agent/.worktrees/build/package.json'\\); const deps = {...pkg.dependencies, ...pkg.devDependencies}; console.log\\(JSON.stringify\\(deps, null, 2\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); pkgs=data.get\\('packages',{}\\); relevant=['node_modules/next','node_modules/react','node_modules/react-dom','node_modules/typescript','node_modules/tailwindcss','node_modules/jest','node_modules/jest-environment-jsdom','node_modules/@testing-library/react','node_modules/@testing-library/jest-dom','node_modules/@anthropic-ai/sdk','node_modules/cheerio']; [print\\(p, pkgs[p].get\\('version','?'\\)\\) for p in relevant if p in pkgs]\")",
+      "Bash(git -C /Users/NES/Documents/GitHub/norsk-news-agent/.worktrees/build show 661a1cf --stat)",
+      "Bash(git -C /Users/NES/Documents/GitHub/norsk-news-agent/.worktrees/build log --oneline 661a1cf)",
+      "Bash(npm run:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(kill %1)",
+      "Bash(npx jest:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('exports keys:', list\\(d.get\\('exports', {'.': {}}\\).get\\('.', {}\\).keys\\(\\)\\) if '.' in d.get\\('exports', {}\\) else 'no exports'\\); print\\('main:', d.get\\('main'\\)\\); print\\('module:', d.get\\('module'\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); import pprint; pprint.pprint\\(d.get\\('exports', {}\\)\\)\")",
+      "Bash(npx tsc:*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); exp=d.get\\('exports',{}\\); print\\('exports keys:', list\\(exp.keys\\(\\)\\)[:5]\\)\")"
+    ]
+  }
+}
