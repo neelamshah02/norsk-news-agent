@@ -18,8 +18,9 @@ export function extractText(html: string): string {
       const text = $(el).text().trim();
       if (text.length > 40) paragraphs.push(text);
     });
-    const joined = paragraphs.join('\n\n');
-    if (joined.length > 200) return joined;
+    if (paragraphs.length > 0) {
+      return paragraphs.join('\n\n');
+    }
   }
   return '';
 }
@@ -27,7 +28,7 @@ export function extractText(html: string): string {
 export async function fetchArticleText(url: string): Promise<{ text: string; truncated: boolean }> {
   try {
     const response = await fetch(url, {
-      headers: { 'User-Agent': 'NorskNewsAgent/1.0' },
+      headers: { 'User-Agent': 'Mozilla/5.0' },
     });
     if (!response.ok) return { text: '', truncated: true };
     const html = await response.text();
