@@ -53,7 +53,7 @@ export async function generateLanguageCard(articleText: string): Promise<Languag
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.0-flash-lite',
     systemInstruction: 'You are a Norwegian language teacher helping an English-speaking student at B1 level learn Norwegian through authentic news articles.',
     generationConfig: {
       responseMimeType: 'application/json',
