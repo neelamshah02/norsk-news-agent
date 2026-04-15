@@ -1,21 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import ArticleCard from './ArticleCard';
-import type { RssEntry, AnalyzeResponse, LanguageCard } from '@/types';
+import type { RssEntry, AnalyzeResponse } from '@/types';
 
-type Status = 'idle' | 'loading' | 'loaded' | 'error';
+type Status = 'idle' | 'loading' | 'loaded' | 'error' | 'error-permanent';
 
 export default function NewsCard({ entry }: { entry: RssEntry }) {
   const [status, setStatus] = useState<Status>('idle');
   const [cardData, setCardData] = useState<AnalyzeResponse | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   async function handleLearn() {
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
     setStatus('loading');
     try {
-      const res = await fetch(`/api/analyze?url=${encodeURIComponent(entry.link)}`);
-      if (!res.ok) throw new Error('fetch failed');
-      const data: { card: LanguageCard; truncated: boolean } = await res.json();
+      const res = await fetch(`/api/analyze?url=${encodeURIComponent(entry.link)}`, {
+        signal: abortRef.current.signal,
+      });
+      if (!res.ok) {
+        if (res.status === 422) {
+          setStatus('error-permanent');
+          return;
+        }
+        throw new Error('fetch failed');
+      }
+      const data = await res.json() as { card: AnalyzeResponse['card']; truncated: boolean };
       setCardData({
         article: {
           title: entry.title,
@@ -26,7 +37,8 @@ export default function NewsCard({ entry }: { entry: RssEntry }) {
         card: data.card,
       });
       setStatus('loaded');
-    } catch {
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setStatus('error');
     }
   }
@@ -82,6 +94,12 @@ export default function NewsCard({ entry }: { entry: RssEntry }) {
             Prøv igjen
           </button>
         </div>
+      )}
+
+      {status === 'error-permanent' && (
+        <p className="text-amber-600 text-sm text-center">
+          Artikkelen er ikke tilgjengelig for analyse (for kort tekst eller betalingsmur).
+        </p>
       )}
 
       {status === 'loaded' && cardData && <ArticleCard data={cardData} />}

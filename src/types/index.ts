@@ -3,7 +3,7 @@ export type Source = 'NRK' | 'VG' | 'Aftenposten';
 export interface RssEntry {
   title: string;
   link: string;
-  description: string;
+  description?: string;
   source: Source;
 }
 
