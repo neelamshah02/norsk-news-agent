@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { QuizQuestion } from '@/types';
 
 interface Props {
@@ -16,14 +16,21 @@ export default function QuizModal({ questions, onClose }: Props) {
   const [options] = useState(() =>
     questions.map(q => [q.correct, ...q.distractors].sort(() => Math.random() - 0.5))
   );
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const q = questions[current];
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   function handleSelect(option: string) {
     if (selected !== null) return;
     setSelected(option);
     if (option === q.correct) setScore(s => s + 1);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       if (current + 1 >= questions.length) {
         setDone(true);
       } else {
@@ -35,16 +42,16 @@ export default function QuizModal({ questions, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 max-w-md w-full space-y-4">
+      <div className="bg-white rounded-xl p-6 max-w-md w-full space-y-4" role="dialog" aria-modal="true" aria-labelledby="quiz-heading">
         {done ? (
           <>
-            <h3 className="text-xl font-bold text-center">
+            <h3 id="quiz-heading" className="text-xl font-bold text-center">
               {score} av {questions.length} riktig
             </h3>
             <p className="text-center text-gray-500">
               {score === questions.length
                 ? 'Perfekt! 🎉'
-                : score >= 3
+                : score >= Math.ceil(questions.length / 2)
                 ? 'Bra jobbet! 👍'
                 : 'Øv mer! 📚'}
             </p>
@@ -61,12 +68,12 @@ export default function QuizModal({ questions, onClose }: Props) {
               <span>Spørsmål {current + 1} av {questions.length}</span>
               <span>Poeng: {score}</span>
             </div>
-            <h3 className="text-xl font-bold text-center">{q.word}</h3>
+            <h3 id="quiz-heading" className="text-xl font-bold text-center">{q.word}</h3>
             <p className="text-center text-gray-500 text-sm">
               Hva betyr dette ordet på engelsk?
             </p>
             <div className="space-y-2">
-              {options[current].map((option, i) => {
+              {options[current].map((option) => {
                 let cls =
                   'w-full text-left px-4 py-3 rounded-lg border transition-colors ';
                 if (selected === null) {
@@ -79,7 +86,7 @@ export default function QuizModal({ questions, onClose }: Props) {
                   cls += 'border-gray-200 text-gray-400';
                 }
                 return (
-                  <button key={i} onClick={() => handleSelect(option)} className={cls}>
+                  <button key={option} onClick={() => handleSelect(option)} className={cls}>
                     {option}
                   </button>
                 );
