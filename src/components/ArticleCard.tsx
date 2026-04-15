@@ -4,28 +4,20 @@ import { useState } from 'react';
 import QuizModal from './QuizModal';
 import type { AnalyzeResponse } from '@/types';
 
+function speak(text: string) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'nb-NO';
+  window.speechSynthesis.speak(utterance);
+}
+
 export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
-  const { article, card } = data;
+  const { card } = data;
   const [quizOpen, setQuizOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-      <div className="flex items-center gap-2 flex-wrap">
-        <a
-          href={article.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1 rounded-full hover:bg-blue-100 transition-colors"
-        >
-          {article.source} ↗
-        </a>
-        {article.truncated && (
-          <span className="text-xs text-gray-400 italic">Forkortet artikkel</span>
-        )}
-      </div>
-
-      <h2 className="text-xl font-bold text-gray-900 leading-snug">{article.title}</h2>
-
+    <div className="mt-4 space-y-6 border-t border-gray-100 pt-4">
       <section>
         <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">
           Sammendrag (B1–B2)
@@ -40,13 +32,22 @@ export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
         <ul className="space-y-3">
           {card.vocabulary.map((item, i) => (
             <li key={i} className="bg-amber-50 rounded-lg px-4 py-3">
-              <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className="font-semibold text-gray-900">{item.word}</span>
                 <span className="text-amber-700 text-sm">— {item.englishGloss}</span>
+                <button
+                  onClick={() => speak(item.word)}
+                  className="text-gray-400 hover:text-blue-600 transition-colors"
+                  aria-label={`Uttale ${item.word}`}
+                >
+                  🔊
+                </button>
               </div>
               <p className="text-gray-600 text-sm">{item.norwegianExplanation}</p>
               {item.exampleSentence && (
-                <p className="text-gray-400 text-sm italic mt-1">«{item.exampleSentence}»</p>
+                <p className="text-gray-400 text-sm italic mt-1">
+                  «{item.exampleSentence}»
+                </p>
               )}
             </li>
           ))}
@@ -57,9 +58,18 @@ export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
         <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">
           Grammatikk
         </h3>
-        <blockquote className="border-l-4 border-blue-200 pl-4 text-gray-600 italic mb-2">
-          «{card.grammarNote.sentence}»
-        </blockquote>
+        <div className="flex items-start gap-2">
+          <blockquote className="flex-1 border-l-4 border-blue-200 pl-4 text-gray-600 italic mb-2">
+            «{card.grammarNote.sentence}»
+          </blockquote>
+          <button
+            onClick={() => speak(card.grammarNote.sentence)}
+            className="text-gray-400 hover:text-blue-600 transition-colors mt-1 shrink-0"
+            aria-label="Uttale setningen"
+          >
+            🔊
+          </button>
+        </div>
         <p className="text-gray-600 text-sm">{card.grammarNote.explanation}</p>
       </section>
 
@@ -73,7 +83,6 @@ export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
       {quizOpen && (
         <QuizModal
           questions={card.quizQuestions}
-          vocabulary={card.vocabulary}
           onClose={() => setQuizOpen(false)}
         />
       )}
