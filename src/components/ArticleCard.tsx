@@ -13,11 +13,17 @@ function speak(text: string) {
 }
 
 export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
-  const { card } = data;
+  const { card, article } = data;
   const [quizOpen, setQuizOpen] = useState(false);
 
   return (
     <div className="mt-4 space-y-6 border-t border-gray-100 pt-4">
+      {article.truncated && (
+        <p className="text-xs text-amber-600 italic">
+          Merk: artikkelen ble delvis hentet. Kortkortet er basert på begrenset tekst.
+        </p>
+      )}
+
       <section>
         <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">
           Sammendrag (B1–B2)
@@ -30,12 +36,13 @@ export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
           Nøkkelord
         </h3>
         <ul className="space-y-3">
-          {card.vocabulary.map((item, i) => (
-            <li key={i} className="bg-amber-50 rounded-lg px-4 py-3">
+          {card.vocabulary.map((item) => (
+            <li key={item.word} className="bg-amber-50 rounded-lg px-4 py-3">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className="font-semibold text-gray-900">{item.word}</span>
                 <span className="text-amber-700 text-sm">— {item.englishGloss}</span>
                 <button
+                  type="button"
                   onClick={() => speak(item.word)}
                   className="text-gray-400 hover:text-blue-600 transition-colors"
                   aria-label={`Uttale ${item.word}`}
@@ -63,6 +70,7 @@ export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
             «{card.grammarNote.sentence}»
           </blockquote>
           <button
+            type="button"
             onClick={() => speak(card.grammarNote.sentence)}
             className="text-gray-400 hover:text-blue-600 transition-colors mt-1 shrink-0"
             aria-label="Uttale setningen"
@@ -74,6 +82,7 @@ export default function ArticleCard({ data }: { data: AnalyzeResponse }) {
       </section>
 
       <button
+        type="button"
         onClick={() => setQuizOpen(true)}
         className="w-full bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
       >
