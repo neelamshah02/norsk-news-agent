@@ -2,16 +2,16 @@ import * as cheerio from 'cheerio';
 import type { RssEntry, Source } from '@/types';
 
 const RSS_FEEDS: Record<Source, string> = {
-  NRK: 'https://www.nrk.no/nyheter/rss/',
-  VG: 'https://www.vg.no/rss/feed/frontpage/',
-  Aftenposten: 'https://www.aftenposten.no/rss/aftenposten.rss',
+  NRK: 'https://www.nrk.no/toppsaker.rss',
+  VG: 'https://www.vg.no/rss/feed/',
+  Aftenposten: 'https://www.aftenposten.no/rss/',
 };
 
 const SOURCE_PRIORITY: Source[] = ['NRK', 'VG', 'Aftenposten'];
 
 export async function fetchFeed(source: Source): Promise<RssEntry[]> {
   const response = await fetch(RSS_FEEDS[source], {
-    headers: { 'User-Agent': 'NorskNewsAgent/1.0' },
+    headers: { 'User-Agent': 'Mozilla/5.0' },
     next: { revalidate: 300 },
   });
   if (!response.ok) throw new Error(`RSS fetch failed for ${source}: ${response.status}`);
