@@ -48,7 +48,7 @@ export function filterByTopic(entries: RssEntry[], topic: string): RssEntry[] {
   return entries.filter(
     e =>
       e.title.toLowerCase().includes(lower) ||
-      e.description.toLowerCase().includes(lower)
+      (e.description ?? '').toLowerCase().includes(lower)
   );
 }
 
