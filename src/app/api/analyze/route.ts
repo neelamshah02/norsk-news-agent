@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchArticleText } from '@/lib/scraper';
-import { generateLanguageCard } from '@/lib/gemini';
+import { generateLanguageCard, MOCK_CARD } from '@/lib/gemini';
 import type { LanguageCard } from '@/types';
 
 export async function GET(request: Request) {
@@ -21,7 +21,13 @@ export async function GET(request: Request) {
       );
     }
 
-    const card: LanguageCard = await generateLanguageCard(articleText);
+    let card: LanguageCard;
+    try {
+      card = await generateLanguageCard(articleText);
+    } catch (geminiError) {
+      console.warn('/api/analyze: Gemini unavailable, using mock data:', geminiError);
+      card = MOCK_CARD;
+    }
     return NextResponse.json({ card, truncated });
   } catch (error) {
     console.error('/api/analyze error:', error);

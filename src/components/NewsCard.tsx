@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ArticleCard from './ArticleCard';
 import type { RssEntry, AnalyzeResponse } from '@/types';
 
 type Status = 'idle' | 'loading' | 'loaded' | 'error' | 'error-permanent';
 
-export default function NewsCard({ entry }: { entry: RssEntry }) {
+export default function NewsCard({ entry, autoLoad }: { entry: RssEntry; autoLoad?: boolean }) {
   const [status, setStatus] = useState<Status>('idle');
   const [cardData, setCardData] = useState<AnalyzeResponse | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -42,6 +42,11 @@ export default function NewsCard({ entry }: { entry: RssEntry }) {
       setStatus('error');
     }
   }
+
+  useEffect(() => {
+    if (autoLoad) handleLearn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-3">

@@ -1,7 +1,76 @@
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType, type Schema } from '@google/generative-ai';
 import type { LanguageCard } from '@/types';
 
-const responseSchema = {
+export const MOCK_CARD: LanguageCard = {
+  summary:
+    'Norge er et land i Nord-Europa med omtrent fem millioner innbyggere. Landet er kjent for sin natur, med fjorder, fjell og nordlys. Norge har en sterk økonomi takket være olje og gass. Mange nordmenn er opptatt av friluftsliv og tilbringer mye tid ute i naturen. Landet er også kjent for sitt gode velferdssystem.',
+  vocabulary: [
+    {
+      word: 'fjord',
+      englishGloss: 'fjord / inlet',
+      norwegianExplanation: 'En fjord er en lang, smal havarm omgitt av høye fjell.',
+      exampleSentence: 'Sognefjorden er den lengste fjorden i Norge.',
+    },
+    {
+      word: 'innbygger',
+      englishGloss: 'inhabitant / resident',
+      norwegianExplanation: 'En innbygger er en person som bor i et bestemt sted eller land.',
+      exampleSentence: 'Norge har omtrent fem millioner innbyggere.',
+    },
+    {
+      word: 'friluftsliv',
+      englishGloss: 'outdoor life',
+      norwegianExplanation: 'Friluftsliv betyr å tilbringe tid ute i naturen for moro og helse.',
+      exampleSentence: 'Nordmenn er veldig glad i friluftsliv.',
+    },
+    {
+      word: 'velferdsstat',
+      englishGloss: 'welfare state',
+      norwegianExplanation: 'En velferdsstat er et land der myndighetene sørger for innbyggernes grunnleggende behov.',
+      exampleSentence: 'Norge er kjent for å ha en sterk velferdsstat.',
+    },
+    {
+      word: 'nordlys',
+      englishGloss: 'northern lights / aurora',
+      norwegianExplanation: 'Nordlys er et naturlig lysshow på himmelen som kan ses i Nord-Norge.',
+      exampleSentence: 'Mange turister reiser til Tromsø for å se nordlyset.',
+    },
+  ],
+  grammarNote: {
+    sentence: 'Det sies at Norge er et av verdens beste land å bo i.',
+    explanation:
+      'This sentence uses the passive construction "det sies" (it is said). In Norwegian, passive voice is often formed with "bli" + past participle, or with the "-s" passive (sies = "is said"). The "-s" passive is common in formal writing and news.',
+  },
+  quizQuestions: [
+    {
+      word: 'fjord',
+      correct: 'a long narrow sea inlet',
+      distractors: ['a type of mountain', 'a Norwegian city', 'a forest area'],
+    },
+    {
+      word: 'innbygger',
+      correct: 'inhabitant',
+      distractors: ['tourist', 'politician', 'journalist'],
+    },
+    {
+      word: 'friluftsliv',
+      correct: 'outdoor life',
+      distractors: ['indoor sport', 'city lifestyle', 'cultural festival'],
+    },
+    {
+      word: 'velferdsstat',
+      correct: 'welfare state',
+      distractors: ['oil company', 'political party', 'national park'],
+    },
+    {
+      word: 'nordlys',
+      correct: 'northern lights',
+      distractors: ['midnight sun', 'snowstorm', 'sea fog'],
+    },
+  ],
+};
+
+const responseSchema: Schema = {
   type: SchemaType.OBJECT,
   properties: {
     summary: { type: SchemaType.STRING },
