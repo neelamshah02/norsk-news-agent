@@ -1,5 +1,22 @@
+# dependencies & build
 .env.local
 .next/
 node_modules/
+venv/
+
+# worktrees & tooling
 .superpowers/
 .worktrees/
+.code-review-graph/
+
+# AI / IDE tool configs (local only)
+.claude/
+.kiro/
+.mcp.json
+.opencode.json
+.cursorrules
+.windsurfrules
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+docs/superpowers/
